@@ -76,6 +76,11 @@ class StudentController extends Controller
     {
          // Cari data student berdasarkan ID
     $student = Student::find($id);
+        if(!$student) {
+        return response()->json([
+            'message' => 'Siswa Tidak Ditemukan'
+        ], 404);
+    }
 
     // Update field student dengan data baru dari request
     $student->update([

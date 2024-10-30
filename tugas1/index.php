@@ -14,7 +14,8 @@ class Animal
     // Method untuk menampilkan seluruh data animals
     public function index()
     {
-        foreach ($this->animals as $index => $animals) {
+        foreach ($this->animals as $animal) {
+            echo $animal . "<br/>";
         }
     }
 

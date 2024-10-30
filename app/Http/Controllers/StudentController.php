@@ -58,7 +58,21 @@ class StudentController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $student = Student::find($id);
+
+        if ($student) {
+            $data = [
+                'message' => 'Get detail student',
+                'data' => $student,
+            ];
+            return response()->json($data, 200);
+        }
+        else {
+            $data = [
+                'message' => 'Student not found',
+            ];
+            return response()->json($data, 404);
+        }
     }
 
     /**
@@ -72,27 +86,29 @@ class StudentController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-         // Cari data student berdasarkan ID
-    $student = Student::find($id);
-
-    // Update field student dengan data baru dari request
-    $student->update([
-        'id' => $request->id,
-        'nama' => $request->nama,
-        'nim' => $request->nim,
-        'email' => $request->email,
-        'jurusan' => $request->jurusan,
-    ]);
-
-    // Membuat respon setelah update berhasil
-    $data = [
-        'message' => 'Student update success!!',
-        'data' => $student,
-    ];
-
-    return response()->json($data, 200);
+        // Cari data student berdasarkan ID
+        $student = Student::find($id);
+        if ($student) {
+            $input = [
+                'nama' => $request->nama ?? $student->nama,
+                'nim' => $request->nim ?? $student->nim,
+                'email' => $request->email ?? $student->email,
+                'jurusan' => $request->jurusan ?? $student->jurusan,
+            ];
+            $student->update($input);
+            $data = [
+                'message' => 'Student is updated',
+                'data' => $student
+            ];
+            return response()->json($data, 200);
+        } else {
+            $data = [
+                'message' => 'Student not found'
+            ];
+            return response()->json($data, 404);
+        }
     }
 
     /**
@@ -102,13 +118,23 @@ class StudentController extends Controller
     {
         $student = Student::find($id);
 
-        $student->delete();
+        if ($student) {
 
-        $data = [
-            'message' => 'Student delete success!!',
-            'data' => $student,
-        ];
+            $student->delete();
 
-        return response()->json($data, 200);
+            $data = [
+                'message' => 'Student delete success!!',
+                'data' => $student,
+            ];
+
+            return response()->json($data, 200);
+        }
+        else {
+            $data = [
+                'message' => 'Student not found',
+            ];
+
+            return response()->json($data, 404);
+        }
     }
 }

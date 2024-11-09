@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 
 
 class StudentController extends Controller
@@ -36,21 +36,27 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        $input = [
-            'nama' => $request->nama,
-            'nim' => $request->nim,
-            'email' => $request->email,
-            'jurusan' => $request->jurusan,
-        ];
+       $validator = Validator::make($request->all(), [
+        'nama' => 'required',
+        'nim' => 'numeric|required',
+        'email' => 'email|required', 
+        'jurusan' => 'jurusan|required',
+       ]);
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation errors',
+                'errors' => $validator->errors(),
+            ], 422);
+        }
 
-        $students = Student::create($input);
+        $students = Student::create($request->all());
 
         $data = [
             'message' => 'Student is create success!!',
             'data' => $students,
         ];
 
-        return response()->json($data, 200);
+        return response()->json($data, 201);
     }
 
     /**
@@ -66,8 +72,7 @@ class StudentController extends Controller
                 'data' => $student,
             ];
             return response()->json($data, 200);
-        }
-        else {
+        } else {
             $data = [
                 'message' => 'Student not found',
             ];
@@ -92,6 +97,7 @@ class StudentController extends Controller
         $student = Student::find($id);
         if ($student) {
             $input = [
+                'id' => $request->id ?? $student->id,
                 'nama' => $request->nama ?? $student->nama,
                 'nim' => $request->nim ?? $student->nim,
                 'email' => $request->email ?? $student->email,
@@ -128,8 +134,7 @@ class StudentController extends Controller
             ];
 
             return response()->json($data, 200);
-        }
-        else {
+        } else {
             $data = [
                 'message' => 'Student not found',
             ];
